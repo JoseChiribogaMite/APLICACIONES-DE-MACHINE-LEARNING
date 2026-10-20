@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuestionario — Aplicaciones de Machine Learning</title>
+<style>
+  :root {
+    --bg1: #0f172a;
+    --bg2: #1e293b;
+    --card: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --accent: #6366f1;
+    --accent2: #8b5cf6;
+    --ok: #10b981;
+    --bad: #ef4444;
+    --ok-bg: #ecfdf5;
+    --bad-bg: #fef2f2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    min-height: 100vh;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+  }
+  .wrap { width: 100%; max-width: 720px; }
+  header { text-align: center; color: #fff; margin-bottom: 20px; }
+  header h1 { font-size: 1.7rem; margin-bottom: 6px; }
+  header p { color: #cbd5e1; font-size: .95rem; }
+
+  .progress-bar {
+    width: 100%; height: 8px; background: #334155;
+    border-radius: 999px; overflow: hidden; margin-bottom: 18px;
+  }
+  .progress-bar > span {
+    display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .3s ease;
+  }
+  .meta {
+    display: flex; justify-content: space-between;
+    color: #cbd5e1; font-size: .85rem; margin-bottom: 10px;
+  }
+  .card {
+    background: var(--card); border-radius: 16px;
+    padding: 24px; box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    margin-bottom: 16px;
+  }
+  .tag {
+    display: inline-block; font-size: .72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .06em;
+    padding: 3px 10px; border-radius: 999px; margin-bottom: 12px;
+  }
+  .tag.u1 { background: #e0e7ff; color: #4338ca; }
+  .tag.u2 { background: #fce7f3; color: #be185d; }
+  .qtext { font-size: 1.12rem; font-weight: 600; margin-bottom: 18px; line-height: 1.4; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    display: block; text-align: left; width: 100%;
+    padding: 13px 16px; border-radius: 12px;
+    border: 2px solid #e2e8f0; background: #fff;
+    cursor: pointer; font-size: .98rem; transition: all .15s ease;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--accent); background: #f8fafc; }
+  .opt:disabled { cursor: default; }
+  .opt.selected { border-color: var(--accent); background: #eef2ff; }
+  .opt.correct { border-color: var(--ok); background: var(--ok-bg); }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+
+  .explain {
+    display: none; margin-top: 16px; padding: 14px 16px;
+    border-radius: 12px; font-size: .92rem; line-height: 1.5;
+  }
+  .explain.show { display: block; }
+  .explain.good { background: var(--ok-bg); border-left: 4px solid var(--ok); }
+  .explain.bad  { background: var(--bad-bg); border-left: 4px solid var(--bad); }
+  .explain b { display: block; margin-bottom: 4px; }
+
+  .controls { display: flex; gap: 12px; justify-content: flex-end; }
+  button.btn {
+    padding: 12px 20px; border-radius: 12px; border: none;
+    font-size: .98rem; font-weight: 600; cursor: pointer;
+    transition: transform .1s ease, opacity .15s;
+  }
+  button.btn:active { transform: scale(.97); }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.ghost { background: #e2e8f0; color: #334155; }
+  .btn:disabled { opacity: .45; cursor: default; }
+
+  .result { text-align: center; padding: 32px 20px; }
+  .result .score { font-size: 3.2rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .result p { color: var(--muted); margin: 10px 0 20px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Cuestionario de Machine Learning</h1>
+    <p>Unidad 1 · EDA y XAI &nbsp;|&nbsp; Unidad 2 · Supervisado y optimización</p>
+  </header>
+
+  <div id="quiz">
+    <div class="progress-bar"><span id="bar"></span></div>
+    <div class="meta">
+      <span id="qnum">Pregunta 1 de 20</span>
+      <span id="score">Aciertos: 0</span>
+    </div>
+    <div class="card">
+      <span class="tag u1" id="tag">Unidad 1</span>
+      <div class="qtext" id="qtext"></div>
+      <div class="options" id="options"></div>
+      <div class="explain" id="explain"></div>
+    </div>
+    <div class="controls">
+      <button class="btn ghost" id="prev">Anterior</button>
+      <button class="btn primary" id="next">Siguiente</button>
+    </div>
+  </div>
+
+  <div id="result" class="card result hidden">
+    <div class="score" id="finalScore"></div>
+    <p id="finalMsg"></p>
+    <button class="btn primary" onclick="location.reload()">Reintentar</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  // ---------- UNIDAD 1 ----------
+  {u:1, q:"¿Cuál es el objetivo del dataset Adult Income utilizado en la Práctica 1?",
+   o:["Predecir si una persona gana más o menos de $50,000 USD al año",
+      "Predecir el precio de una casa",
+      "Clasificar tumores benignos y malignos",
+      "Predecir el nivel de glucosa"],
+   a:0, e:"Extraído del censo de 1994 de EE. UU., el objetivo es clasificar si el ingreso anual supera o no los $50,000."},
+  {u:1, q:"¿Aproximadamente cuántos registros tiene el Adult Income Dataset?",
+   o:["32 mil","5 mil","1 millón","500"],
+   a:0, e:"Tiene alrededor de 32,561 registros y 14 atributos."},
+  {u:1, q:"¿Qué librería se usa para cargar y manipular datos en DataFrames en la Práctica 1?",
+   o:["pandas","scikit-learn","tensorflow","statsmodels"],
+   a:0, e:"pandas aporta el DataFrame, la estructura tabular central del análisis."},
+  {u:1, q:"¿Qué librerías de visualización se importan en la Práctica 1?",
+   o:["matplotlib y seaborn","plotly y bokeh","ggplot2","d3.js"],
+   a:0, e:"Se importan matplotlib.pyplot y seaborn (alias sns)."},
+  {u:1, q:"¿Qué significa EDA?",
+   o:["Análisis Exploratorio de Datos","Estimación de Datos Avanzada","Extracción de Datos Automática","Evaluación de Datos Aleatorios"],
+   a:0, e:"EDA = Exploratory Data Analysis: inspeccionar el dataset antes de modelar."},
+  {u:1, q:"¿Qué función de scikit-learn separa los datos en entrenamiento y prueba?",
+   o:["train_test_split","fit_transform","cross_val_score","StandardScaler"],
+   a:0, e:"train_test_split divide X e y en conjuntos de entrenamiento y prueba."},
+  {u:1, q:"¿Qué modelo se entrena en la Práctica 2.1 para medir la importancia de características?",
+   o:["RandomForestRegressor","LinearRegression","ARIMA","KMeans"],
+   a:0, e:"Un bosque aleatorio de regresión sobre el dataset California Housing."},
+  {u:1, q:"¿Qué técnica de IA Explicable (XAI) se aplica en la Práctica 2.2?",
+   o:["Valores SHAP","PCA","Grid Search","One-hot encoding"],
+   a:0, e:"SHAP cuantifica la contribución de cada variable a cada predicción."},
+  {u:1, q:"¿Qué modelo se usa junto con SHAP en la Práctica 2.2?",
+   o:["XGBRegressor","AdaBoostClassifier","SVC","LogisticRegression"],
+   a:0, e:"Se entrena un XGBRegressor (XGBoost) de regresión."},
+  {u:1, q:"¿Qué mide la Importancia por Permutación (permutation_importance)?",
+   o:["Cuánto cae el rendimiento al permutar aleatoriamente una variable",
+      "El tiempo de entrenamiento del modelo",
+      "La correlación entre variables",
+      "El número de árboles del bosque"],
+   a:0, e:"Si al barajar una columna el error sube mucho, esa variable es importante."},
+
+  // ---------- UNIDAD 2 ----------
+  {u:2, q:"¿Qué modelo de clasificación se entrena en la Práctica 4?",
+   o:["AdaBoostClassifier","XGBRegressor","RandomForestRegressor","ARIMA"],
+   a:0, e:"AdaBoost, un algoritmo de boosting, para clasificación binaria."},
+  {u:2, q:"¿Qué devuelve el método predict_proba?",
+   o:["Las probabilidades de pertenencia a cada clase","Las etiquetas finales","Los coeficientes del modelo","La matriz de confusión"],
+   a:0, e:"predict_proba(X)[:, 1] da la probabilidad de la clase positiva."},
+  {u:2, q:"¿Qué representa el AUC en una curva ROC?",
+   o:["El área bajo la curva ROC","La exactitud del modelo","El número de falsos positivos","El error cuadrático medio"],
+   a:0, e:"Mide la capacidad de separar clases: 1.0 es perfecto y 0.5 es azar."},
+  {u:2, q:"¿Qué dataset se utiliza en la Práctica 5?",
+   o:["Diabetes","California Housing","Adult Income","Breast Cancer"],
+   a:0, e:"Se carga con load_diabetes de scikit-learn."},
+  {u:2, q:"¿Qué técnica de búsqueda de hiperparámetros se usa en la Práctica 5?",
+   o:["RandomizedSearchCV","GridSearchCV","BayesSearchCV","Optuna"],
+   a:0, e:"Muestreo aleatorio de n_iter=30 combinaciones con validación cruzada."},
+  {u:2, q:"¿Qué métrica se calcula en la Práctica 5 (RMSE)?",
+   o:["La raíz del error cuadrático medio","La exactitud","El AUC","La precisión"],
+   a:0, e:"RMSE = sqrt(mean_squared_error(y_test, y_pred))."},
+  {u:2, q:"¿Qué librería se usa para la optimización bayesiana en la Práctica 6A?",
+   o:["Optuna","pandas","seaborn","statsmodels"],
+   a:0, e:"Con TPESampler, create_study y optimize sobre XGBClassifier."},
+  {u:2, q:"¿Qué es un hiperparámetro?",
+   o:["Una configuración fijada antes del entrenamiento","Un valor aprendido por el modelo","Una etiqueta del dataset","Una métrica de error"],
+   a:0, e:"Ejemplos: max_depth, n_estimators, min_child_weight."},
+  {u:2, q:"¿Qué hace GridSearchCV?",
+   o:["Prueba todas las combinaciones de una cuadrícula de hiperparámetros",
+      "Elige hiperparámetros al azar",
+      "Usa un modelo probabilístico para guiar la búsqueda",
+      "Normaliza los datos"],
+   a:0, e:"Búsqueda exhaustiva sobre param_grid con validación cruzada."},
+  {u:2, q:"¿Qué herramienta se usa en la Práctica 6B?",
+   o:["BayesSearchCV de scikit-optimize","GridSearchCV","RandomizedSearchCV","TPESampler"],
+   a:0, e:"Define espacios de búsqueda Real, Integer y Categorical."},
+];
+
+let idx = 0;
+let answers = new Array(QUESTIONS.length).fill(null); // índice elegido o null
+let locked = new Array(QUESTIONS.length).fill(false);
+
+const qnum = document.getElementById("qnum");
+const scoreEl = document.getElementById("score");
+const tagEl = document.getElementById("tag");
+const qtext = document.getElementById("qtext");
+const optionsEl = document.getElementById("options");
+const explainEl = document.getElementById("explain");
+const bar = document.getElementById("bar");
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
+
+function render() {
+  const q = QUESTIONS[idx];
+  qnum.textContent = "Pregunta " + (idx + 1) + " de " + QUESTIONS.length;
+  tagEl.textContent = "Unidad " + q.u;
+  tagEl.className = "tag " + (q.u === 1 ? "u1" : "u2");
+  qtext.textContent = q.q;
+  bar.style.width = ((idx) / QUESTIONS.length * 100) + "%";
+
+  optionsEl.innerHTML = "";
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.textContent = opt;
+    btn.disabled = locked[idx];
+    if (locked[idx]) {
+      if (i === q.a) btn.classList.add("correct");
+      else if (i === answers[idx]) btn.classList.add("wrong");
+    } else if (i === answers[idx]) {
+      btn.classList.add("selected");
+    }
+    btn.onclick = () => {
+      if (locked[idx]) return;
+      answers[idx] = i;
+      render();
+    };
+    optionsEl.appendChild(btn);
+  });
+
+  const ex = explainEl;
+  if (locked[idx]) {
+    const good = answers[idx] === q.a;
+    ex.className = "explain show " + (good ? "good" : "bad");
+    ex.innerHTML = "<b>" + (good ? "✅ Correcto" : "❌ Incorrecto") + "</b>" + q.e;
+    nextBtn.textContent = (idx === QUESTIONS.length - 1) ? "Ver resultado" : "Siguiente";
+  } else {
+    ex.className = "explain";
+    ex.innerHTML = "";
+    nextBtn.textContent = "Responder";
+  }
+
+  prevBtn.disabled = idx === 0;
+  nextBtn.disabled = answers[idx] === null;
+  scoreEl.textContent = "Aciertos: " + countScore();
+}
+
+function countScore() {
+  let s = 0;
+  for (let i = 0; i < QUESTIONS.length; i++) if (answers[i] === QUESTIONS[i].a) s++;
+  return s;
+}
+
+nextBtn.onclick = () => {
+  if (!locked[idx]) {
+    if (answers[idx] === null) return;
+    locked[idx] = true;
+    render();
+    return;
+  }
+  if (idx < QUESTIONS.length - 1) {
+    idx++;
+    render();
+  } else {
+    finish();
+  }
+};
+
+prevBtn.onclick = () => {
+  if (idx > 0) { idx--; render(); }
+};
+
+function finish() {
+  bar.style.width = "100%";
+  document.getElementById("quiz").classList.add("hidden");
+  const r = document.getElementById("result");
+  r.classList.remove("hidden");
+  const total = countScore();
+  document.getElementById("finalScore").textContent = total + " / " + QUESTIONS.length;
+  let msg;
+  if (total >= 18) msg = "¡Excelente! Dominas ambas unidades.";
+  else if (total >= 14) msg = "Muy bien. Repasa los conceptos que fallaste.";
+  else if (total >= 10) msg = "Buen intento. Revisa los README de cada unidad.";
+  else msg = "Sigue estudiando. Vuelve a los README y reintenta.";
+  document.getElementById("finalMsg").textContent = msg;
+}
+
+render();
+</script>
+</body>
+</html>
