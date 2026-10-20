@@ -112,7 +112,7 @@
   <div id="quiz">
     <div class="progress-bar"><span id="bar"></span></div>
     <div class="meta">
-      <span id="qnum">Pregunta 1 de 20</span>
+      <span id="qnum">Pregunta 1 de 40</span>
       <span id="score">Aciertos: 0</span>
     </div>
     <div class="card">
@@ -205,10 +205,74 @@ const QUESTIONS = [
       "Usa un modelo probabilístico para guiar la búsqueda",
       "Normaliza los datos"],
    a:0, e:"Búsqueda exhaustiva sobre param_grid con validación cruzada."},
-  {u:2, q:"¿Qué herramienta se usa en la Práctica 6B?",
-   o:["BayesSearchCV de scikit-optimize","GridSearchCV","RandomizedSearchCV","TPESampler"],
-   a:0, e:"Define espacios de búsqueda Real, Integer y Categorical."},
-];
+   {u:2, q:"¿Qué herramienta se usa en la Práctica 6B?",
+    o:["BayesSearchCV de scikit-optimize","GridSearchCV","RandomizedSearchCV","TPESampler"],
+    a:0, e:"Define espacios de búsqueda Real, Integer y Categorical."},
+
+  // ---------- UNIDAD 1 (técnica / lógica) ----------
+  {u:1, q:"En la Práctica 1, ¿qué valor usa el dataset para representar datos faltantes que luego se convierte a NaN?",
+   o:["\"?\"","\"0\"","\"NA\"","\"null\""],
+   a:0, e:"El dataset usa \"?\" para valores ausentes; se reemplaza con df.replace(\"?\", np.nan)."},
+  {u:1, q:"¿Qué método de pandas elimina las filas duplicadas?",
+   o:["drop_duplicates()","dropna()","fillna()","reset_index()"],
+   a:0, e:"df.drop_duplicates(inplace=True) elimina los registros repetidos."},
+  {u:1, q:"¿Qué método selecciona solo las columnas numéricas del DataFrame?",
+   o:["df.select_dtypes(include=\"number\")","df.info()","df.describe()","df.columns"],
+   a:0, e:"select_dtypes filtra columnas por tipo de dato (number / object)."},
+  {u:1, q:"En un boxplot, ¿cómo se identifican los outliers con el método IQR?",
+   o:["Fuera del rango [Q1 - 1.5*IQR, Q3 + 1.5*IQR]","Fuera de media ± 2 desviaciones","Valores mayores a la mediana","Fuera de [mínimo, máximo]"],
+   a:0, e:"IQR = Q3 - Q1; los puntos fuera de ese rango se consideran atípicos."},
+  {u:1, q:"¿Cuál es la diferencia entre feature_importances_ y permutation_importance?",
+   o:["El primero se calcula al entrenar (cómo divide el árbol); el segundo baraja columnas y mide el efecto real sobre la predicción","Son idénticos","El primero siempre es más confiable","El segundo no necesita el modelo"],
+   a:0, e:"La permutación es más lenta pero mide el impacto real en las predicciones."},
+  {u:1, q:"En permutation_importance, ¿qué indica n_repeats?",
+   o:["Cuántas veces se repite la permutación de cada columna","El número de árboles del bosque","El número de pliegues de la validación cruzada","La profundidad máxima de los árboles"],
+   a:0, e:"Por defecto se repite 5 veces para promediar un resultado más estable."},
+  {u:1, q:"En California Housing, ¿qué variable suele dominar el precio de las casas?",
+   o:["MedInc (ingreso medio)","Latitude","HouseAge","AveBedrms"],
+   a:0, e:"El ingreso medio del área es el predictor más fuerte del precio."},
+  {u:1, q:"En SHAP, ¿qué hace shap.Explainer(model, X_train)?",
+   o:["Crea un explicador usando el modelo entrenado y X_train como referencia","Entrena el modelo","Predice sobre X_train","Normaliza los datos"],
+   a:0, e:"model es el modelo a explicar; X_train es el conjunto de referencia (background)."},
+  {u:1, q:"En SHAP, ¿qué gráfico muestra la explicación de UNA sola predicción (importancia local)?",
+   o:["waterfall","beeswarm","bar","histograma"],
+   a:0, e:"waterfall descompone una predicción en las contribuciones de cada variable."},
+  {u:1, q:"En la Práctica 3, ¿qué significa ARIMA(1,1,1)?",
+   o:["AR=1 (autorregresivo), I=1 (una diferencia), MA=1 (media móvil)","1 árbol, 1 capa, 1 neurona","1 variable, 1 serie, 1 ruido","1 train, 1 test, 1 modelo"],
+   a:0, e:"I=1 aplica una diferencia (y_t - y_{t-1}) para volver la serie estacionaria."},
+
+  // ---------- UNIDAD 2 (técnica / lógica) ----------
+  {u:2, q:"En la Práctica 4, ¿qué devuelve predict_proba(X_test)[:, 1]?",
+   o:["La probabilidad de la clase positiva","La etiqueta predicha","La probabilidad de la clase negativa","Los umbrales de decisión"],
+   a:0, e:"[:, 1] selecciona la columna 2: la probabilidad de la clase positiva."},
+  {u:2, q:"¿Qué devuelve la función roc_curve?",
+   o:["fpr, tpr y thresholds","accuracy y precisión","la matriz de confusión","el AUC"],
+   a:0, e:"roc_curve(etiquetas reales, probabilidades) devuelve las tres listas."},
+  {u:2, q:"¿Por qué se usa scoring='neg_mean_squared_error' en la Práctica 5?",
+   o:["Porque scikit-learn maximiza la métrica y un MSE menor es mejor (se invierte el signo)","Porque el MSE es siempre negativo","Es un error de escritura","Porque la glucosa tiene valores negativos"],
+   a:0, e:"scikit-learn maximiza el score; el signo negativo convierte la minimización en maximización."},
+  {u:2, q:"¿Qué produce randint(50, 300)?",
+   o:["Enteros aleatorios entre 50 y 299","Números flotantes aleatorios","Siempre el valor 300","Una distribución normal"],
+   a:0, e:"randint(low, high) muestrea enteros en el intervalo [low, high)."},
+  {u:2, q:"En RandomizedSearchCV, ¿qué significa n_iter=30?",
+   o:["Probar 30 combinaciones de hiperparámetros al azar","30 árboles en el bosque","30 pliegues de validación","30 épocas de entrenamiento"],
+   a:0, e:"n_iter limita cuántas combinaciones se muestrean de las distribuciones."},
+  {u:2, q:"¿Qué significa cv=5 en las búsquedas de hiperparámetros?",
+   o:["Validación cruzada con 5 pliegues","5 árboles de decisión","5 clases objetivo","5 variables predictoras"],
+   a:0, e:"Los datos se dividen en 5 partes; se entrena/evalúa 5 veces rotando la partición."},
+  {u:2, q:"¿Qué atributo devuelve el mejor modelo ya reentrenado en una búsqueda?",
+   o:["best_estimator_","best_params_","best_score_","cv_results_"],
+   a:0, e:"best_estimator_ es el modelo con los mejores hiperparámetros, listo para predecir."},
+  {u:2, q:"En Optuna, ¿qué hace create_study(direction=\"maximize\")?",
+   o:["Define un estudio que busca maximizar la métrica","Entrena el modelo","Grafica los resultados","Instala la librería"],
+   a:0, e:"direction=\"maximize\" indica que el objetivo es maximizar el accuracy."},
+  {u:2, q:"En la función objetivo de Optuna, ¿qué hace prueba.suggest_int(...)?",
+   o:["Propone un valor entero del hiperparámetro en cada prueba","Ajusta el modelo","Evalúa el test","Normaliza los datos"],
+   a:0, e:"suggest_int devuelve un candidato del rango indicado para cada trial."},
+  {u:2, q:"¿Qué hace TPESampler en la optimización bayesiana?",
+   o:["Un sampler que guía la búsqueda usando un modelo probabilístico","Divide los datos en train/test","Calcula el RMSE","Hace validación cruzada"],
+   a:0, e:"TPE aprende de los resultados previos para concentrar las pruebas en zonas prometedoras."},
+ ];
 
 let idx = 0;
 let answers = new Array(QUESTIONS.length).fill(null); // índice elegido o null
@@ -302,9 +366,9 @@ function finish() {
   const total = countScore();
   document.getElementById("finalScore").textContent = total + " / " + QUESTIONS.length;
   let msg;
-  if (total >= 18) msg = "¡Excelente! Dominas ambas unidades.";
-  else if (total >= 14) msg = "Muy bien. Repasa los conceptos que fallaste.";
-  else if (total >= 10) msg = "Buen intento. Revisa los README de cada unidad.";
+  if (total >= 36) msg = "¡Excelente! Dominas ambas unidades.";
+  else if (total >= 28) msg = "Muy bien. Repasa los conceptos que fallaste.";
+  else if (total >= 20) msg = "Buen intento. Revisa los README de cada unidad.";
   else msg = "Sigue estudiando. Vuelve a los README y reintenta.";
   document.getElementById("finalMsg").textContent = msg;
 }
