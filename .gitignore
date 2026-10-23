@@ -1,0 +1,82 @@
+# ==========================================
+# Git Ignore - Aplicaciones de Machine Learning
+# ==========================================
+
+# --- Byte-compiled / optimized / DLL files ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Jupyter Notebooks & Checkpoints ---
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+*.ipynb_checkpoints
+
+# --- Virtual Environments ---
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Python packaging & distribution ---
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Testing & Code Quality ---
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+
+# --- IDEs & Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.directory
+
+# --- Operating System Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# --- Logs & Databases ---
+*.log
+*.sqlite
+*.sqlite3
+
+# --- Machine Learning Artifacts & Heavy Data (opcional según necesidad) ---
+# Nota: Si se descargan datasets pesados o modelos serializados temporales
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.onnx
+# Descomentar si se desea ignorar datasets CSV grandes no versionados:
+# *.csv
+# !adult.csv
+
+# --- Profiling temporary outputs ---
+# *.html
