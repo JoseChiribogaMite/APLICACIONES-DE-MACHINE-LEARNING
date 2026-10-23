@@ -1,0 +1,17 @@
+Actividad Integradora: Análisis Exploratorio de Datos (EDA).
+Objetivo
+Diseñar y programar una herramienta propia de EDA automatizado en Python capaz de procesar un
+dataset y generar de forma 100% automatizada un diagnóstico estadístico, visual y de calidad de datos,
+optimizado para identificar problemas clave en modelos de regresión como la multicolinealidad, el sesgo y
+los valores atípicos. Se deben incluir todos los 10  puntos de EDA que se mostraron en la clase.
+El estudiante es libre de usar un dataset a su conveniencia, en el área de interés que más le
+apetezca.  Kaggle y UCI son sitios web que proveen algunos datasets para practicar.
+https://www.kaggle.com/datasets
+https://archive.ics.uci.edu/datasets
+Instrucciones:
+Como referencia, revisar las herramientas python 'ydata-profiling' o 'Sweetviz' las cuales realizan un análisis
+EDA de forma automática.
+Se recomienda crear la función CLASS para poder reutilizar código.
+
+Se recomienda usar el comando %%writefile para crear un archivo donde guardar su análisis EDA.
+Para referencia, revisar el cuaderno "herramientas_EDA.ipynb" en adjunto.
