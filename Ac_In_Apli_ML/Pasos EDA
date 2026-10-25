@@ -1,0 +1,21 @@
+	Punto de EDA	Operaciones clave
+1	Importar librerías	pandas, numpy, matplotlib, seaborn (+ statsmodels para VIF)
+2	Conocer el dataset	head(), tail(), shape, sample(), columns, memory_usage
+3	Tipo de variable	info(), dtypes, select_dtypes (numéricas vs. categóricas)
+4	Calidad de datos	duplicated(), valores raros (?, -, N/A, espacios)
+5	Valores faltantes	isnull().sum(), % de nulos, severidad
+6	Outliers	boxplot, cuartiles, IQR
+7	Estadística descriptiva	describe(), media, mediana, std, skew, kurtosis
+8	Desbalance de clases / target	value_counts(), porcentajes, countplot
+9	Análisis univariado	histogramas, KDE, skew, curtosis por variable
+10	Análisis bivariado/multivariado	scatter, boxplot por categoría, heatmap de correlación
+
+
+
+herramientas_EDA_(3).ipynb.
+
+Un dataset apropiado para un análisis orientado a regresión, con target continuo identificado.
+Un notebook de la actividad que cargue los datos, explique decisiones y muestre resultados y conclusiones.
+Una clase reutilizable AutoEDA exportada a Integradora 1/herramientas_eda.py.
+Una ejecución automatizada con tablas y gráficos para los diez puntos, más diagnósticos de VIF, sesgo y outliers.
+Una sección final que interprete los hallazgos y recomiende acciones, sin presentar las alertas estadísticas como decisiones automáticas de limpieza.
