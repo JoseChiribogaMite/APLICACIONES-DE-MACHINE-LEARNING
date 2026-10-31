@@ -1,0 +1,29 @@
+ML REGRESIÓN: IA EXPLICATIVA y Búsqueda de mejores hiperparámetros.
+
+Objetivo
+Desarrollar en Python un modelo de ML para regresión que incluya el análisis exploratorio de datos (EDA) automatizado, preprocesamiento, búsqueda de hiperparámetros (grid/randomized/bayesian) y la evaluación e interpretación de modelos de aprendizaje automático mediante técnicas de Inteligencia Artificial Explicativa (XAI).
+
+El objetivo principal es entrenar un modelo predictivo optimizado y "abrir la caja negra" aplicando Feature Importance, Permutation Importance y SHAP Values para interpretar sus decisiones a nivel global y local.
+
+Elige un dataset diferente a los de las practicas de los repos. Kaggle y UCI son sitios web que proveen algunos datasets para practicar.
+https://www.kaggle.com/datasets
+https://archive.ics.uci.edu/datasets
+
+
+Instrucciones:
+
+*Descarga un dataset de libre elección enfocado en un problema de Regresión.
+
+*Importa y reutiliza la clase/módulo/código de EDA automatizado desarrollado en la Actividad Integradora 1 para generar el diagnóstico inicial de calidad de datos, distribuciones, etc.
+
+*Preprocesamiento y Partición de Datos
+
+*Elige 2 modelos de ML, y encuentra los mejores hiperparámetros usando GridSearch, Búsqueda Aleatoria y Optimización Bayesiana. Explique qué método logró el mejor poder predictivo (score) y compare los tiempos de ejecución.
+
+*Entrene un nuevo modelo con los mejores hiperparámetros.  
+
+*Use Feature Importance, Permutation Importance y SHAP Values para evaluar la importancia global de las features.
+
+*Realice una predicción nueva y use SHAP VALUES para evaluar la importancia local de las features.
+
+despues de comprender las instrucciones genera un readme_act_int_2.md con todos los pasos punto a punto para completar la practica de actividad integradora incluye el codigo de cada parte para el archivo ipynb, las explicaciones tecnicas, el proceso para comprender cda parte y para que sirve agrega los comentarios de cada linea de codigo
