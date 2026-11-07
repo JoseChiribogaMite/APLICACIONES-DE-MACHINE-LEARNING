@@ -3,7 +3,7 @@
 herramientas_eda.py — Actividad Integradora 1 · Aplicaciones de Machine Learning
 ================================================================================
 Herramienta PROPIA de Análisis Exploratorio de Datos (EDA) 100 % automatizada,
-orientada a modelos de REGRESIÓN. Cubre los 10 puntos de EDA de clase y emite un
+orientada a modelos de REGRESIÓN y CLASIFICACIÓN. Cubre los 10 puntos de EDA de clase y emite un
 diagnóstico estadístico, visual y de calidad de datos para detectar:
 
   · MULTICOLINEALIDAD  → matriz de correlación de Pearson + VIF (statsmodels).
@@ -129,9 +129,10 @@ class AutoEDA:
                             f"df.drop_duplicates() o si corresponden a registros legítimos repetidos.")
         centinelas = ['?', '-', 'n/a', 'na', 'none', 'null', '']  # lista de valores típicos que "disfrazan" datos ausentes
         for c in self.cat_cols:                                 # la búsqueda de centinelas se aplica a columnas de texto
-            normalizada = self.df[c].astype(str).str.strip().str.lower()  # convierte a texto, quita espacios y pasa a minúsculas para comparar
+            textos_validos = self.df[c].dropna().astype(str)     # excluye nulos antes de convertir texto para evitar falsos positivos con pandas moderno
+            normalizada = textos_validos.str.strip().str.lower()  # convierte a texto, quita espacios y pasa a minúsculas para comparar
             n_raros = normalizada.isin(centinelas).sum()        # cuenta coincidencias exactas con los valores centinela
-            n_espacios = (self.df[c].astype(str) != self.df[c].astype(str).str.strip()).sum()  # detecta textos con espacios al inicio o final
+            n_espacios = (textos_validos != textos_validos.str.strip()).sum()  # detecta textos con espacios al inicio o final sin contar faltantes
             if n_raros > 0 or n_espacios > 0:                   # si hay hallazgos en esta columna...
                 self._registrar(4, 'valores_raros',             # ...se registra la observación con el detalle numérico
                                 f"'{c}': {n_raros} valor(es) centinela ('?', '-', 'N/A'...) y "
@@ -298,13 +299,35 @@ class AutoEDA:
                             line_kws={'color': 'red'})          # recta de tendencia en rojo
                 plt.title(f'{c} vs {self.target_col} (r={corr_target[c]:.3f})')  # título con el coeficiente de Pearson
                 plt.show()                                      # renderiza la figura
-        # --- 10b. Predictores CATEGÓRICOS vs target: boxplots agrupados ---
-        if self.target_col and self.target_col in self.df.columns:  # aplica a cualquier target declarado (numérico o categórico)
-            for c in self.cat_cols:                             # recorre cada variable categórica
-                plt.figure(figsize=self.figsize)                # figura por categoría
-                sns.boxplot(data=self.df, x=c, y=self.target_col)  # boxplot del target por cada categoría: revela efectos de grupo
-                plt.title(f'{self.target_col} por {c}')         # título descriptivo
-                plt.show()                                      # renderiza la figura
+        # --- 10b. Predictores vs target: el gráfico depende del tipo de problema ---
+        if self.target_col and self.target_col in self.df.columns:  # aplica cuando se declaró un target válido
+            if self.target_col in self.num_cols:                 # en regresión, compara targets numéricos entre categorías
+                for c in self.cat_cols:                          # recorre las variables categóricas disponibles
+                    if c == self.target_col:                     # evita usar el target como su propio predictor
+                        continue                                 # continúa con la siguiente categoría
+                    plt.figure(figsize=self.figsize)             # crea una figura por variable categórica
+                    sns.boxplot(data=self.df, x=c, y=self.target_col)  # compara la distribución del target por categoría
+                    plt.title(f'{self.target_col} por {c}')      # titula la relación entre predictor y target
+                    plt.show()                                   # renderiza la figura
+            else:                                                # en clasificación, el target es categórico
+                for c in self.num_cols:                          # recorre los predictores numéricos
+                    if c == self.target_col:                     # evita incluir el target como predictor
+                        continue                                 # continúa con el siguiente predictor
+                    plt.figure(figsize=self.figsize)             # crea una figura para comparar distribuciones
+                    sns.boxplot(data=self.df, x=self.target_col, y=c)  # compara el predictor numérico por clase
+                    plt.title(f'{c} por clase de {self.target_col}')  # identifica la variable y el target
+                    plt.show()                                   # renderiza la figura
+                for c in self.cat_cols:                          # recorre los predictores categóricos
+                    if c == self.target_col:                     # omite el target para evitar graficarlo contra sí mismo
+                        continue                                 # continúa con la siguiente variable
+                    categorias_frecuentes = self.df[c].value_counts().head(12).index  # limita el gráfico a 12 niveles legibles
+                    datos_grafico = self.df[self.df[c].isin(categorias_frecuentes)]  # filtra solo esos niveles para esta figura
+                    plt.figure(figsize=self.figsize)             # crea una figura de frecuencias por clase
+                    sns.countplot(data=datos_grafico, x=c, hue=self.target_col, order=categorias_frecuentes)  # compara clases por categoría
+                    plt.title(f'Distribución de {self.target_col} por {c} (hasta 12 categorías)')  # explica el límite visual
+                    plt.xticks(rotation=45, ha='right')          # rota etiquetas para reducir solapamientos
+                    plt.tight_layout()                           # ajusta márgenes para incluir las etiquetas
+                    plt.show()                                   # renderiza la figura
         # --- 10c. Matriz de correlación (heatmap) y pares colineales ---
         if len(self.num_cols) > 1:                              # se necesitan al menos 2 numéricas para correlacionar
             corr = self.df[self.num_cols].corr()                # matriz de correlación lineal de Pearson entre todas las numéricas
@@ -355,7 +378,7 @@ class AutoEDA:
     def run_analysis(self):
         """Método público: ejecuta los 10 puntos de EDA en orden y de forma 100 % automatizada (una sola llamada)."""
         print("=" * 72)                                         # línea separadora superior del reporte
-        print(" DIAGNÓSTICO AUTOMATIZADO DE EDA · ORIENTADO A REGRESIÓN ".center(72))  # título centrado del reporte
+        print(" DIAGNÓSTICO AUTOMATIZADO DE EDA · REGRESIÓN Y CLASIFICACIÓN ".center(72))  # título centrado del reporte
         print("=" * 72)                                         # línea separadora
         print("⚠  Esta herramienta SOLO diagnostica y reporta: no elimina filas, no imputa")
         print("   nulos y no transforma variables. Cada acción de limpieza es una decisión")
