@@ -7,6 +7,7 @@ El proyecto resuelve una **clasificación binaria de ingresos** mediante un úni
 **Archivos de la actividad:**
 
 - [Notebook ejecutado](integradora_3.ipynb): código, tablas, gráficas e interpretaciones.
+- [Copia corregida y ejecutada](integradora_3%20%28copia%29.ipynb): instalación restaurada y ejecución completa validada en Python 3.12 local. La interrupción guardada en Colab ocurrió durante la importación de seaborn, antes del modelado; no se verificó nuevamente ese entorno Python 3.13.
 - [Reporte técnico](Reporte_Actividad_Integradora_3.docx): código explicado línea por línea, resultados e interpretación, con presentación adaptada a la guía APA 7.
 - [Instrucciones](intrucciones.txt): requisitos y entregables.
 - Este README: recorrido de aprendizaje para reconstruir el notebook.
@@ -86,7 +87,7 @@ Adult ya se utilizó en las prácticas. Su elección permite reutilizar y compre
 3. Crear las celdas de texto y código en el orden indicado a continuación.
 4. Copiar cada bloque de código a una celda de **código**. Las explicaciones de esta guía sirven para redactar las celdas de **texto**.
 5. Ejecutar de arriba hacia abajo. No es necesario montar Drive, subir un CSV ni crear `herramientas_eda.py`.
-6. Si Colab solicita reiniciar después de instalar versiones, reiniciar y volver a ejecutar las celdas en orden.
+6. Esperar a que la instalación termine sin errores, reiniciar la sesión o el kernel y continuar desde la celda de importaciones. No reinstalar paquetes mientras se ejecutan otras celdas. Si se interrumpe una importación, reiniciar antes de reintentar.
 7. Guardar el notebook después de la ejecución completa, incluyendo sus salidas.
 
 Una celda de **texto o Markdown** documenta decisiones; no entrena modelos. Una celda de **código** ejecuta Python y crea objetos que otras celdas utilizarán. `%pip` es una instrucción del entorno Jupyter/Colab: no se ejecuta directamente en un archivo `.py` común.
@@ -157,10 +158,10 @@ La numeración siguiente empieza en **1** y cuenta también las celdas Markdown.
 **Tipo:** código. **Requisito:** disponer de un kernel de Colab/Jupyter con acceso a internet.
 
 ```python
-%pip install -q numpy==2.1.3 pandas==2.2.3 matplotlib==3.10.0 seaborn==0.13.2 scikit-learn==1.6.1 scikit-optimize==0.10.2 shap==0.48.0 # Instala las dependencias utilizadas con versiones compatibles y reproducibles.
+%pip install numpy==2.1.3 pandas==2.2.3 matplotlib==3.10.0 seaborn==0.13.2 scikit-learn==1.6.1 scikit-optimize==0.10.2 shap==0.48.0 # Instala todas las dependencias y muestra el progreso y los errores.
 ```
 
-**Cómo funciona:** `%pip` instala en el intérprete del notebook; `==` fija la versión y `-q` reduce mensajes de instalación.
+**Cómo funciona:** `%pip` instala en el intérprete del notebook; `==` fija la versión. Se conserva la salida de instalación para ver progreso y errores. No sustituir esta celda por una reinstalación aislada de `python-dateutil`: eso no prepara todas las dependencias.
 
 **Para qué sirve cada familia:** NumPy y pandas manejan datos; matplotlib y seaborn dibujan; scikit-learn prepara, entrena y evalúa; scikit-optimize realiza la búsqueda bayesiana; SHAP explica predicciones.
 
@@ -175,8 +176,10 @@ import time  # Permite medir el tiempo real transcurrido de cada búsqueda.
 import numpy as np  # Proporciona operaciones numéricas y comprobaciones de consistencia.
 import pandas as pd  # Maneja las tablas de datos y de resultados.
 import matplotlib.pyplot as plt  # Dibuja y muestra las figuras.
+print("Cargando seaborn; espera a que termine la importación...")  # Identifica la importación que fue interrumpida en la copia.
 import seaborn as sns  # Proporciona el mapa de correlaciones y el estilo estadístico.
 import sklearn  # Permite registrar la versión efectiva de scikit-learn.
+print("Cargando SHAP; la primera importación puede tardar...")  # Hace visible el avance antes de importar la herramienta XAI.
 import shap  # Calcula contribuciones globales y locales del modelo.
 from IPython.display import display, Markdown  # Muestra tablas e interpretaciones calculadas en el notebook.
 from sklearn.datasets import fetch_openml  # Descarga el dataset público sin archivos locales.
